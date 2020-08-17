@@ -175,6 +175,7 @@ while train_flag:
     temp_disc_loss_list = []
     correct, total = 0, 0
     for file_path in train_batch:
+        # train step
         gen.zero_grad()
         disc.zero_grad()
         noise = torch.tensor(np.random.normal(0,0.4, 100)).float().to(device)
@@ -216,9 +217,10 @@ while train_flag:
         gen.to(cpu)
         torch.save(gen, gen_save_filename)
         gen.to(device)
+        
         disc.to(cpu)
         torch.save(disc, disc_save_filename)
-        disc.to(cpu)
+        disc.to(device)
         curr_patience = PATIENCE
     else:
         curr_patience -= 1
