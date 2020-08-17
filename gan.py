@@ -14,9 +14,21 @@ from tqdm.notebook import tqdm
 import cv2
 import os
 from pathlib import Path
+import random
 a = time.time()
 print(f'Imports complete in {a-b} seconds')
 
+
+def make_batches(file_paths, batch_size):
+    batch = []
+    file_paths.sort()
+    for i in range(len(file_paths)//batch_size):
+        batch.append(random.choice(file_paths[(i*batch_size):((i+1)*batch_size)]))
+    return batch
+
+def plot_and_save(val_image_noise):
+    # TO_DO
+    pass
 
 class Generator(nn.Module):
     def __init__(self):
@@ -92,7 +104,7 @@ class Discriminator(nn.Module):
 
     def preprocess(self, image_path):
         image_array = cv2.imread(image_path)
-        np_array = ((np.asarray(image_array-)-127.5)/127.5).reshape(3,400,400)
+        np_array = ((np.asarray(image_array)-127.5)/127.5).reshape(3,400,400)
         return torch.tensor(np_array).float().to(device)
 
     def get_loss(self, disc_gen_img_out, disc_real_img_out):
@@ -120,16 +132,35 @@ for roots,dirs,files in os.walk(data_path):
         file_paths.append(f'{data_path}/{file_}')
 print(f'Total no. of file_paths = {len(file_paths)}')
 
+# Make normal random noise for validation
+val_image_noise = []
+for i in range(16):
+    noise = torch.tensor(np.random.normal(0,0.4, 100)).float().to(device)
+    val_image_noise.append(noise)
+
+gen_save_filename = 'art_gen.pt'
+disc_save_filename = 'art_disc.pt'
+
+gen_loss_list = []
+disc_loss_list = []
+disc_acc_list = []
+val_image_path = './val_images'
+train_flag = True
+epoch_count = 0
 # The training loop
 while train_flag:
-    train_batch = make_batches(file_paths)
+    epoch_count += 1
+    train_batch = make_batches(file_paths, 30)
+    temp_gen_loss_list = []
+    temp_disc_loss_list = []
+    correct, total = 0, 0
     for file_path in train_batch:
         gen.zero_grad()
         disc.zero_grad()
         noise = torch.tensor(np.random.normal(0,0.4, 100)).float().to(device)
-        gen_img_out = gen(noise).detach()
-        disc_gen_img_out = disc(gen_img_out).detach()
-        disc_real_img_out = disc(disc.preprocess(file_path)).detach()
+        gen_img_out = gen(noise)
+        disc_gen_img_out = disc(gen_img_out)
+        disc_real_img_out = disc(disc.preprocess(file_path))
         gen_loss = gen.get_loss(disc_gen_img_out)
         disc_loss = disc.get_loss(disc_gen_img_out, disc_real_img_out)
         gen_loss.backward()
@@ -137,4 +168,21 @@ while train_flag:
         gen.optimizer.step()
         disc.optimizer.step()
 
+        # For metrics
+        temp_gen_loss_list.append(gen_loss.item())
+        temp_disc_loss_list.append(disc_loss.item())
+        if disc_gen_img_out.item() < 0.5:
+            correct += 1
+            total += 1
+        else:
+            total += 1
 
+        if disc_real_img_out.item() > 0.5:
+            correct += 1
+            total += 1
+        else:
+            total += 1
+    gen_loss_list.append(np.average(temp_gen_loss_list))
+    disc_loss_list.append(np.average(temp_disc_loss_list))
+    disc_acc_list.append(correct/total)
+    plot_and_save(val_image_noise)
