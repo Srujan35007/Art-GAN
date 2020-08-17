@@ -26,9 +26,26 @@ def make_batches(file_paths, batch_size):
         batch.append(random.choice(file_paths[(i*batch_size):((i+1)*batch_size)]))
     return batch
 
-def plot_and_save(val_image_noise):
-    # TO_DO
-    pass
+def plot_and_save(val_image_noise,val_image_path,epoch_count):
+    counter = 0
+    for noise in val_image_noise:
+        counter += 1
+        fileName = f'epoch_{epoch_count}_{str((4-len(str(counter)))*"0")}' + f'{counter}.jpg'
+        out = gen(noise).cpu().detach().numpy().reshape(400,400,3)
+        cv2.imwrite(f'{val_image_path}/epoch{epoch_count}/{fileName}', out)
+        plt.imshow(out)
+        plt.show()
+
+def plot_metrics(gen_loss_list, disc_loss_list):
+    epochs = [i+1 for i in range(len(gen_loss_list))]
+    plt.plot(epochs, gen_loss_list, linewidth = 0.8, color = 'r', label = 'g_loss')
+    plt.plot(epochs, disc_loss_list, linewidth = 0.8, color = 'b', label = 'd_loss')
+    plt.legend()
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.title('Loss metrics')
+    plt.show()
+
 
 class Generator(nn.Module):
     def __init__(self):
@@ -134,12 +151,14 @@ print(f'Total no. of file_paths = {len(file_paths)}')
 
 # Make normal random noise for validation
 val_image_noise = []
-for i in range(16):
+for i in range(6):
     noise = torch.tensor(np.random.normal(0,0.4, 100)).float().to(device)
     val_image_noise.append(noise)
 
 gen_save_filename = 'art_gen.pt'
 disc_save_filename = 'art_disc.pt'
+PATIENCE = 5
+PLT_SHOW = 3
 
 gen_loss_list = []
 disc_loss_list = []
@@ -147,6 +166,7 @@ disc_acc_list = []
 val_image_path = './val_images'
 train_flag = True
 epoch_count = 0
+curr_patience = PATIENCE
 # The training loop
 while train_flag:
     epoch_count += 1
@@ -185,4 +205,28 @@ while train_flag:
     gen_loss_list.append(np.average(temp_gen_loss_list))
     disc_loss_list.append(np.average(temp_disc_loss_list))
     disc_acc_list.append(correct/total)
-    plot_and_save(val_image_noise)
+    plot_and_save(val_image_noise, val_image_path, epoch_count)
+    
+    # Print metrics
+    print(f'\nEpoch:{epoch_count}, gen_loss:{gen_loss}, disc_loss:{disc_loss}')
+    print(f'Disc_acc:{(correct/total)*100}%')
+
+    # Save models
+    if gen_loss == min(gen_loss_list):
+        gen.to(cpu)
+        torch.save(gen, gen_save_filename)
+        gen.to(device)
+        disc.to(cpu)
+        torch.save(disc, disc_save_filename)
+        disc.to(cpu)
+        curr_patience = PATIENCE
+    else:
+        curr_patience -= 1
+    
+    if curr_patience == 0:
+        train_flag = False
+    else:
+        pass
+
+    if epoch_count % PLT_SHOW == 0:
+        plot_metrics(gen_loss_list, disc_loss_list)
