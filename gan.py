@@ -11,6 +11,9 @@ from torchsummary import summary
 import numpy as np 
 import matplotlib.pyplot as plt
 from tqdm.notebook import tqdm 
+import cv2
+import os
+from pathlib import Path
 a = time.time()
 print(f'Imports complete in {a-b} seconds')
 
@@ -87,6 +90,11 @@ class Discriminator(nn.Module):
         x = torch.sigmoid(self.out(x))
         return x
 
+    def preprocess(self, image_path):
+        image_array = cv2.imread(image_path)
+        np_array = ((np.asarray(image_array-)-127.5)/127.5).reshape(3,400,400)
+        return torch.tensor(np_array).float().to(device)
+
     def get_loss(self, disc_gen_img_out, disc_real_img_out):
         loss_fn = nn.BCELoss()
         real_loss = loss_fn(torch.ones_like(disc_real_img_out), disc_real_img_out)
@@ -98,3 +106,35 @@ class Discriminator(nn.Module):
             if isinstance(module, nn.Linear) or isinstance(module, nn.Conv2d):
                 nn.init.kaiming_uniform_(module.weight)
         print('Discriminator weigths initialized')
+
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+cpu = torch.device('cpu')
+gen = Generator().to(device)
+disc = Discriminator().to(device)
+
+# Get real image paths
+data_path = f''
+file_paths = []
+for roots,dirs,files in os.walk(data_path):
+    for file_ in files:
+        file_paths.append(f'{data_path}/{file_}')
+print(f'Total no. of file_paths = {len(file_paths)}')
+
+# The training loop
+while train_flag:
+    train_batch = make_batches(file_paths)
+    for file_path in train_batch:
+        gen.zero_grad()
+        disc.zero_grad()
+        noise = torch.tensor(np.random.normal(0,0.4, 100)).float().to(device)
+        gen_img_out = gen(noise).detach()
+        disc_gen_img_out = disc(gen_img_out).detach()
+        disc_real_img_out = disc(disc.preprocess(file_path)).detach()
+        gen_loss = gen.get_loss(disc_gen_img_out)
+        disc_loss = disc.get_loss(disc_gen_img_out, disc_real_img_out)
+        gen_loss.backward()
+        disc_loss.backward()
+        gen.optimizer.step()
+        disc.optimizer.step()
+
+
