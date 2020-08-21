@@ -1,0 +1,74 @@
+Imports complete in 0.0001704692840576172 seconds
+Running on cuda:0
+Generated created.
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Linear-1                  [-1, 625]         160,625
+   ConvTranspose2d-2         [-1, 1024, 25, 25]          10,240
+       BatchNorm2d-3         [-1, 1024, 25, 25]           2,048
+         LeakyReLU-4         [-1, 1024, 25, 25]               0
+   ConvTranspose2d-5         [-1, 1024, 25, 25]       9,438,208
+       BatchNorm2d-6         [-1, 1024, 25, 25]           2,048
+         LeakyReLU-7         [-1, 1024, 25, 25]               0
+   ConvTranspose2d-8          [-1, 512, 50, 50]       8,389,120
+       BatchNorm2d-9          [-1, 512, 50, 50]           1,024
+        LeakyReLU-10          [-1, 512, 50, 50]               0
+  ConvTranspose2d-11         [-1, 1024, 50, 50]       4,719,616
+      BatchNorm2d-12         [-1, 1024, 50, 50]           2,048
+        LeakyReLU-13         [-1, 1024, 50, 50]               0
+  ConvTranspose2d-14          [-1, 512, 50, 50]       4,719,104
+      BatchNorm2d-15          [-1, 512, 50, 50]           1,024
+        LeakyReLU-16          [-1, 512, 50, 50]               0
+  ConvTranspose2d-17          [-1, 512, 50, 50]       2,359,808
+      BatchNorm2d-18          [-1, 512, 50, 50]           1,024
+        LeakyReLU-19          [-1, 512, 50, 50]               0
+  ConvTranspose2d-20        [-1, 256, 100, 100]       2,097,408
+      BatchNorm2d-21        [-1, 256, 100, 100]             512
+        LeakyReLU-22        [-1, 256, 100, 100]               0
+  ConvTranspose2d-23        [-1, 512, 100, 100]       1,180,160
+      BatchNorm2d-24        [-1, 512, 100, 100]           1,024
+        LeakyReLU-25        [-1, 512, 100, 100]               0
+  ConvTranspose2d-26        [-1, 256, 100, 100]       1,179,904
+      BatchNorm2d-27        [-1, 256, 100, 100]             512
+        LeakyReLU-28        [-1, 256, 100, 100]               0
+  ConvTranspose2d-29        [-1, 256, 100, 100]         590,080
+      BatchNorm2d-30        [-1, 256, 100, 100]             512
+        LeakyReLU-31        [-1, 256, 100, 100]               0
+  ConvTranspose2d-32        [-1, 128, 200, 200]         524,416
+      BatchNorm2d-33        [-1, 128, 200, 200]             256
+        LeakyReLU-34        [-1, 128, 200, 200]               0
+  ConvTranspose2d-35        [-1, 256, 200, 200]         295,168
+      BatchNorm2d-36        [-1, 256, 200, 200]             512
+        LeakyReLU-37        [-1, 256, 200, 200]               0
+  ConvTranspose2d-38        [-1, 128, 200, 200]         295,040
+      BatchNorm2d-39        [-1, 128, 200, 200]             256
+        LeakyReLU-40        [-1, 128, 200, 200]               0
+  ConvTranspose2d-41        [-1, 128, 200, 200]         147,584
+      BatchNorm2d-42        [-1, 128, 200, 200]             256
+        LeakyReLU-43        [-1, 128, 200, 200]               0
+  ConvTranspose2d-44         [-1, 64, 400, 400]         131,136
+      BatchNorm2d-45         [-1, 64, 400, 400]             128
+        LeakyReLU-46         [-1, 64, 400, 400]               0
+  ConvTranspose2d-47        [-1, 128, 400, 400]          73,856
+      BatchNorm2d-48        [-1, 128, 400, 400]             256
+        LeakyReLU-49        [-1, 128, 400, 400]               0
+  ConvTranspose2d-50         [-1, 64, 400, 400]          73,792
+      BatchNorm2d-51         [-1, 64, 400, 400]             128
+        LeakyReLU-52         [-1, 64, 400, 400]               0
+  ConvTranspose2d-53         [-1, 64, 400, 400]          36,928
+      BatchNorm2d-54         [-1, 64, 400, 400]             128
+        LeakyReLU-55         [-1, 64, 400, 400]               0
+  ConvTranspose2d-56          [-1, 3, 400, 400]           1,731
+      BatchNorm2d-57          [-1, 3, 400, 400]               6
+        LeakyReLU-58          [-1, 3, 400, 400]               0
+================================================================
+Total params: 36,437,626
+Trainable params: 36,437,626
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.00
+Forward/backward pass size (MB): 2237.55
+Params size (MB): 139.00
+Estimated Total Size (MB): 2376.55
+----------------------------------------------------------------
