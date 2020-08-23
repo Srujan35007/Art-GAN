@@ -77,33 +77,36 @@ class Generator(nn.Module):
         self.convt20 = get_up_layer(n//16, 3, 3, 1, 1)
         print(f'Generated created.')
 
+    def upsample(self, tensor_):
+        return nn.Upsample(scale_factor=2, mode='nearest')(tensor_)
+
     def __call__(self, x):
         x = x.view(-1, self.latent_dims)
         x = self.lin1(x)
         x = x.view(-1, 1, 25, 25)
-        x = self.convt2(x)
-        x = self.convt3(x)
-        x = self.convt4(x)
-        x = self.convt5(x)
-        x = self.convt6(x)
-        x = self.convt7(x)
-        x = self.convt8(x)
-        x = self.convt9(x)
-        x = self.convt10(x)
-        x = self.convt11(x)
-        x = self.convt12(x)
-        x = self.convt13(x)
-        x = self.convt14(x)
-        x = self.convt15(x)
-        x = self.convt16(x)
-        x = self.convt17(x)
-        x = self.convt18(x)
-        x = self.convt19(x)
-        x = self.convt20(x)
-        return x
+        out_2_up1 = self.convt2(x)
+        out_3 = self.convt3(out_2_up1)
+        out_4_sum1 = self.convt4(out_3)
+        out_5_up1 = self.convt5(out_4_sum1)
+        out_6_up2 = self.convt6(out_5_up1+ self.upsample(out_2_up1)) # Up1
+        out_7_sum1 = self.convt7(out_6_up2)
+        out_8_sum2 = self.convt8(out_7_sum1+out_4_sum1) # Sum1
+        out_9_up2 = self.convt9(out_8_sum2)
+        out_10_up3 = self.convt10(out_9_up2+ self.upsample(out_6_up2)) # Up2
+        out_11_sum2 = self.convt11(out_10_up3)
+        out_12_sum3 = self.convt12(out_11_sum2+ out_8_sum2) # Sum2
+        out_13_up3 = self.convt13(out_12_sum3)
+        out_14_up4 = self.convt14(out_13_up3+ self.upsample(out_10_up3)) # Up3
+        out_15_sum3 = self.convt15(out_14_up4)
+        out_16_sum4 = self.convt16(out_15_sum3+out_12_sum3) # Sum3
+        out_17_up4 = self.convt17(out_16_sum4)
+        out_18 = self.convt18(out_17_up4+ self.upsample(out_14_up4)) # Up4
+        out_19_sum4 = self.convt19(out_18)
+        out_20 = self.convt20(out_19_sum4+out_16_sum4) # Sum4
+        return out_20
 
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Running on {device}')
 gen = Generator(max_channels=128).to(device)
 
