@@ -108,6 +108,42 @@ class Generator(nn.Module):
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Running on {device}')
-gen = Generator(max_channels=128).to(device)
+# gen = Generator(max_channels=128).to(device)
+# summary(gen, (1, 256))
 
-summary(gen, (1, 256))
+
+class Discriminator(nn.Module):
+    def __init__(self, max_channels=256):
+        super(Discriminator, self).__init__()
+        n = max_channels
+        self.input1 = get_down_layer(3, n//16, 3,1,1)       # 200,200
+        self.conv2 = get_down_layer(n//16, n//16, 3,1,1)
+        self.conv3 = get_down_layer(n//16, n//8, 4,2,1)     # 100,100
+        self.conv4 = get_down_layer(n//8, n//8, 3,1,1)
+        self.conv5 = get_down_layer(n//8, n//8, 3,1,1)
+        self.conv6 = get_down_layer(n//8, n//4, 4,2,1)      # 50,50
+        self.conv7 = get_down_layer(n//4, n//4, 3,1,1)
+        self.conv8 = get_down_layer(n//4, n//2, 4,2,1)      # 25,25
+        self.conv9 = get_down_layer(n//2, n//2, 3,1,1)      
+        self.conv10 = get_down_layer(n//2, 1, 3,1,1)        # 25,25,1
+        self.lin11 = nn.Linear(25*25, 100)
+        self.out12 = nn.Linear(100, 1)
+        print('Discriminator created.')
+    
+    def __call__(self, x):
+        x = self.input1(x.view(-1,3,400,400))
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
+        x = self.conv6(x)
+        x = self.conv7(x)
+        x = self.conv8(x)
+        x = self.conv9(x)
+        x = self.conv10(x)
+        x = self.lin11(x.view(-1,625))
+        return self.out12(x)
+
+
+disc = Discriminator(max_channels=128)
+summary(disc, (400,400,3))
