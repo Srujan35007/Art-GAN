@@ -60,23 +60,23 @@ class Generator(nn.Module):
         self.lin1 = nn.Linear(self.latent_dims, 625)
         self.convt2 = get_up_layer(1, n, 3, 1, 1)
         self.convt3 = get_up_layer(n, n, 3, 1, 1)
-        self.convt4 = get_up_layer(n, n, 4, 2, 1)
-        self.convt5 = get_up_layer(n, n, 3, 1, 1)
-        self.convt6 = get_up_layer(n, n, 3, 1, 1)
-        self.convt7 = get_up_layer(n, n, 3, 1, 1)
-        self.convt8 = get_up_layer(n, n//2, 4, 2, 1)
-        self.convt9 = get_up_layer(n//2, n, 3, 1, 1)
-        self.convt10 = get_up_layer(n, n//2, 3, 1, 1)
-        self.convt11 = get_up_layer(n//2, n//2, 3, 1, 1)
-        self.convt12 = get_up_layer(n//2, n//4, 4, 2, 1)
-        self.convt13 = get_up_layer(n//4, n//2, 3, 1, 1)
-        self.convt14 = get_up_layer(n//2, n//4, 3, 1, 1)
-        self.convt15 = get_up_layer(n//4, n//4, 3, 1, 1)
-        self.convt16 = get_up_layer(n//4, n//8, 4, 2, 1)
-        self.convt17 = get_up_layer(n//8, n//4, 3, 1, 1)
-        self.convt18 = get_up_layer(n//4, n//8, 3, 1, 1)
-        self.convt19 = get_up_layer(n//8, n//8, 3, 1, 1)
-        self.convt20 = get_up_layer(n//8, 3, 3, 1, 1)
+        self.convt4 = get_up_layer(n, n//2, 4, 2, 1)
+        self.convt5 = get_up_layer(n//2, n, 3, 1, 1)
+        self.convt6 = get_up_layer(n, n//2, 3, 1, 1)
+        self.convt7 = get_up_layer(n//2, n//2, 3, 1, 1)
+        self.convt8 = get_up_layer(n//2, n//4, 4, 2, 1)
+        self.convt9 = get_up_layer(n//4, n//2, 3, 1, 1)
+        self.convt10 = get_up_layer(n//2, n//4, 3, 1, 1)
+        self.convt11 = get_up_layer(n//4, n//4, 3, 1, 1)
+        self.convt12 = get_up_layer(n//4, n//8, 4, 2, 1)
+        self.convt13 = get_up_layer(n//8, n//4, 3, 1, 1)
+        self.convt14 = get_up_layer(n//4, n//8, 3, 1, 1)
+        self.convt15 = get_up_layer(n//8, n//8, 3, 1, 1)
+        self.convt16 = get_up_layer(n//8, n//16, 4, 2, 1)
+        self.convt17 = get_up_layer(n//16, n//8, 3, 1, 1)
+        self.convt18 = get_up_layer(n//8, n//16, 3, 1, 1)
+        self.convt19 = get_up_layer(n//16, n//16, 3, 1, 1)
+        self.convt20 = get_up_layer(n//16, 3, 3, 1, 1)
         print(f'Generated created.')
 
     def upsample(self, tensor_):
@@ -112,8 +112,6 @@ class Generator(nn.Module):
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Running on {device}')
-# gen = Generator(max_channels=128).to(device)
-# summary(gen, (1, 256))
 
 
 class Discriminator(nn.Module):
@@ -150,4 +148,8 @@ class Discriminator(nn.Module):
 
 
 disc = Discriminator(max_channels=128)
+gen = Generator(max_channels=128).to(device)
+print('Generator summary')
+summary(gen, (1, 256))
+print('Discriminator summary')
 summary(disc, (400,400,3))
