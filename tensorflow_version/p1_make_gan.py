@@ -74,8 +74,6 @@ def make_discriminator(max_channels=256):
         layers.Conv2D(1, 4,2,'same'),
         act,
         layers.Flatten(),
-        layers.Dense(100),
-        act,
         layers.Dense(1, activation='sigmoid')
     ])
     return model
