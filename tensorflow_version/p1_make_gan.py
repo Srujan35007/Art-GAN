@@ -36,12 +36,47 @@ def make_generator(latent_dims = 200, max_channels=256):
     x = layers.Conv2DTranspose(n//8, 3,1,'same')(x)
     x = layers.Conv2DTranspose(n//8, 3,1,'same')(x)
     x = layers.Conv2DTranspose(n//8, 4,2,'same')(x) # 400,400
-    output_ = layers.Activation('sigmoid')(layers.Conv2DTranspose(3,    3,1,'same')(x))
+    output_ = layers.Activation('tanh')(layers.Conv2DTranspose(3,    3,1,'same')(x))
 
     model = Model(input_, output_)
     return model
 
-gen = make_generator()
-a = np.random.random((1,200))
-plt.imshow(gen.predict(a).reshape(400,400,3))
-plt.show()
+# Discriminator
+def make_discriminator(max_channels=256):
+    n = max_channels
+    act = layers.ReLU()
+
+    model = models.Sequential([
+        layers.Conv2D(n//64, 9,1,'same',input_shape = (400,400,3)),
+        act,
+        layers.Conv2D(n//64, 9,1,'same'),
+        act,
+        layers.Conv2D(n//64, 10,2,'same'),
+        act,
+        layers.Conv2D(n//16, 7,1,'same'),
+        act,
+        layers.Conv2D(n//16, 7,1,'same'),
+        act,
+        layers.Conv2D(n//16, 8,2,'same'),
+        act,
+        layers.Conv2D(n//4, 5,1,'same'),
+        act,
+        layers.Conv2D(n//4, 5,1,'same'),
+        act,
+        layers.Conv2D(n//4, 6,2,'same'),
+        act,
+        layers.Conv2D(n//1, 3,1,'same'),
+        act,
+        layers.Conv2D(n//1, 3,1,'same'),
+        act,
+        layers.Conv2D(n//1, 4,2,'same'),
+        act,
+        layers.Conv2D(1, 4,2,'same'),
+        act,
+        layers.Flatten(),
+        layers.Dense(100),
+        act,
+        layers.Dense(1, activation='sigmoid')
+    ])
+    return model
+
