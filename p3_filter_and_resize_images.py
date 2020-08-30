@@ -9,6 +9,7 @@ print('Imports complete')
 
 path = f'Path_to_the_downloaded_images_folder'
 resized = f'Path_to_the_new_resized_images_folder'
+res = 400
 
 file_paths = []
 for roots, dirs, files in os.walk(path):
@@ -29,8 +30,8 @@ for file_path in tqdm(file_paths):
             new_height_start = max(0, int((height-width)//2 - 0.4*(height-width)//2))
             new_height_end = new_height_start + width
             img = img[new_height_start:new_height_end, 0:width]
-            img = cv2.resize(img, (400,400))
-            cv2.imwrite(resized+f'\\art_400_{count}.jpg', img)
+            img = cv2.resize(img, (res,res))
+            cv2.imwrite(resized+f'\\art_{res}_{count}.jpg', img)
             count += 1
         elif img.shape[0] < img.shape[1]: # Heigth < Width
             width = img.shape[1]
@@ -39,12 +40,12 @@ for file_path in tqdm(file_paths):
             new_width_start = max(0, int((width-height)//2))
             new_width_end = new_width_start + height
             img = img[0:height, new_width_start:new_width_end]
-            img = cv2.resize(img, (400,400))
-            cv2.imwrite(resized+f'\\art_400_{count}.jpg', img)
+            img = cv2.resize(img, (res,res))
+            cv2.imwrite(resized+f'\\art_{res}_{count}.jpg', img)
             count += 1
         elif img.shape[0] == img.shape[1]: # Square image
-            img = cv2.resize(img, (400,400))
-            cv2.imwrite(resized+f'\\art_400_{count}.jpg', img)
+            img = cv2.resize(img, (res,res))
+            cv2.imwrite(resized+f'\\art_{res}_{count}.jpg', img)
             count += 1
         else:
             pass
