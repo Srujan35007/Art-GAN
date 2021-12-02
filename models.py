@@ -1,6 +1,5 @@
 import torch 
 import torch.nn as nn 
-from torchsummary import summary
 
 
 # Generator
@@ -64,6 +63,3 @@ class Discriminator(nn.Module):
 
     def forward(self, x):
         return self.layers(x)
-
-disc = Discriminator()
-summary(disc, (3,512,512))
