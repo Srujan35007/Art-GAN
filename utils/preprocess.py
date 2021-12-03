@@ -4,7 +4,7 @@ import time
 import cv2 
 import numpy as np 
 
-THRESH = 512
+THRESH = 512 # pixels
 
 images_dir = f"../../../Datasets/AbstractArt"
 out_dir = './Clean_Abstract_Art'

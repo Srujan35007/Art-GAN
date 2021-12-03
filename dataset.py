@@ -2,6 +2,7 @@ import cv2
 import random
 from glob import glob
 import torch 
+import numpy as np
 from torch.utils.data import Dataset
 
 class ArtData(Dataset):
